@@ -1,0 +1,33 @@
+{
+  "name": "private-chat-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aibenStunner/private-chat-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aibenStunner/private-chat-app/issues"
+  },
+  "homepage": "https://github.com/aibenStunner/private-chat-app#readme",
+  "dependencies": {
+    "@prisma/client": "^4.0.0",
+    "apollo-server": "^3.10.0",
+    "bcryptjs": "^2.4.3",
+    "graphql": "^16.5.0",
+    "jsonwebtoken": "^8.5.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19",
+    "prisma": "4.0.0"
+  }
+}
