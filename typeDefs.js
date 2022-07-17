@@ -3,6 +3,7 @@ import { gql } from "apollo-server";
 const typeDefs = gql`
   type Query {
     users: [User]
+    messagesByUser(receiverId: Int!): [Message]
   }
 
   input UserInput {
@@ -20,6 +21,7 @@ const typeDefs = gql`
   type Mutation {
     signUpUser(newUser: UserInput!): User
     signInUser(userSignIn: UserSignInput!): Token
+    createMessage(receiverId: Int!, text: String!): Message
   }
 
   type User {
@@ -31,6 +33,16 @@ const typeDefs = gql`
 
   type Token {
     token: String!
+  }
+
+  scalar Date
+
+  type Message {
+    id: ID!
+    text: String!
+    receiverId: Int!
+    senderId: Int!
+    createdAt: Date!
   }
 `;
 

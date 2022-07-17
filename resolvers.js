@@ -21,6 +21,27 @@ const resolvers = {
       });
       return users;
     },
+    messagesByUser: async (_, { receiverId }, { userId }) => {
+      if (!userId) throw new ForbiddenError("You must be logged in!");
+      const messages = await prisma.message.findMany({
+        orderBy: {
+          createdAt: "asc",
+        },
+        where: {
+          OR: [
+            {
+              senderId: userId,
+              receiverId,
+            },
+            {
+              senderId: receiverId,
+              receiverId: userId,
+            },
+          ],
+        },
+      });
+      return messages;
+    },
   },
 
   Mutation: {
@@ -66,6 +87,18 @@ const resolvers = {
       );
 
       return { token };
+    },
+
+    createMessage: async (_, { receiverId, text }, { userId }) => {
+      if (!userId) throw new ForbiddenError("You must be logged in!");
+      const message = await prisma.message.create({
+        data: {
+          text,
+          receiverId,
+          senderId: userId,
+        },
+      });
+      return message;
     },
   },
 };
