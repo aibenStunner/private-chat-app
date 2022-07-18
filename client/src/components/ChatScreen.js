@@ -12,6 +12,7 @@ import MessageCard from "./MessageCard";
 
 const ChatScreen = () => {
   const { id, name } = useParams();
+
   return (
     <Box flexGrow={1}>
       <AppBar position="static" sx={{ backgroundColor: "white", boxShadow: 0 }}>
