@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import {
   Box,
   AppBar,
@@ -6,17 +6,30 @@ import {
   Avatar,
   Typography,
   TextField,
+  Stack,
 } from "@mui/material";
-import React from "react";
+import SendIcon from "@mui/icons-material/Send";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { GET_MESSAGES } from "../graphql/queries";
 import MessageCard from "./MessageCard";
+import { SEND_MESSAGE } from "../graphql/mutations";
 
 const ChatScreen = () => {
   const { id, name } = useParams();
-  const { loading, data, error } = useQuery(GET_MESSAGES, {
+  const [text, setText] = useState("");
+  const [messages, setMessages] = useState([]);
+  const { data, loading, error } = useQuery(GET_MESSAGES, {
     variables: {
       receiverId: +id,
+    },
+    onCompleted(data) {
+      setMessages(data.messagesByUser);
+    },
+  });
+  const [sendMessage] = useMutation(SEND_MESSAGE, {
+    onCompleted(data) {
+      setMessages((prevMessages) => [...prevMessages, data.createMessage]);
     },
   });
 
@@ -49,6 +62,7 @@ const ChatScreen = () => {
           data.messagesByUser.map((msg) => {
             return (
               <MessageCard
+                key={msg.id}
                 text={msg.text}
                 date={msg.createdAt}
                 direction={msg.receiverId == +id ? "end" : "start"}
@@ -57,13 +71,28 @@ const ChatScreen = () => {
           })
         )}
       </Box>
-      <TextField
-        placeholder="Enter a message"
-        variant="standard"
-        fullWidth
-        multiline
-        rows={2}
-      />
+      <Stack direction="row">
+        <TextField
+          placeholder="Enter a message"
+          variant="standard"
+          fullWidth
+          multiline
+          rows={2}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
+        <SendIcon
+          fontSize="large"
+          onClick={() =>
+            sendMessage({
+              variables: {
+                receiverId: +id,
+                text,
+              },
+            })
+          }
+        />
+      </Stack>
     </Box>
   );
 };
