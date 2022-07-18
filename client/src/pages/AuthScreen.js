@@ -10,9 +10,9 @@ import {
   Alert,
 } from "@mui/material";
 import { useMutation } from "@apollo/client";
-import { SIGNUP_USER } from "../graphql/mutations";
+import { SIGNIN_USER, SIGNUP_USER } from "../graphql/mutations";
 
-const AuthScreen = () => {
+const AuthScreen = ({ setLoggedIn }) => {
   const [showLogin, setShowLogin] = useState(true);
   const [formData, setFromData] = useState({});
   const authForm = useRef(null);
@@ -20,7 +20,15 @@ const AuthScreen = () => {
   const [signUpUser, { data: signUpResponse, loading: l1, error: e1 }] =
     useMutation(SIGNUP_USER);
 
-  if (l1) {
+  const [signInUser, { data: signInResponse, loading: l2, error: e2 }] =
+    useMutation(SIGNIN_USER, {
+      onCompleted(data) {
+        localStorage.setItem("jwt", data.signInUser.token);
+        setLoggedIn(true);
+      },
+    });
+
+  if (l1 || l2) {
     return (
       <Box
         display="flex"
@@ -47,7 +55,11 @@ const AuthScreen = () => {
     e.preventDefault();
 
     if (showLogin) {
-      //sign in user
+      signInUser({
+        variables: {
+          userSignIn: formData,
+        },
+      });
     } else {
       signUpUser({
         variables: {
@@ -75,6 +87,7 @@ const AuthScreen = () => {
             </Alert>
           )}
           {e1 && <Alert severity="error">{e1.message}</Alert>}
+          {e2 && <Alert severity="error">{e2.message}</Alert>}
           <Typography variant="h5">
             Please {showLogin ? "Login" : "Signup"}
           </Typography>
@@ -85,12 +98,14 @@ const AuthScreen = () => {
                 label="First Name"
                 variant="standard"
                 onChange={handleChange}
+                required
               />
               <TextField
                 name="lastName"
                 label="Last Name"
                 variant="standard"
                 onChange={handleChange}
+                required
               />
             </>
           )}
@@ -101,6 +116,7 @@ const AuthScreen = () => {
             label="Email"
             variant="standard"
             onChange={handleChange}
+            required
           />
           <TextField
             type="password"
@@ -108,6 +124,7 @@ const AuthScreen = () => {
             label="Password"
             variant="standard"
             onChange={handleChange}
+            required
           />
           <Typography
             variant="subtitle1"
