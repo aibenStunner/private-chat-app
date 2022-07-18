@@ -2,13 +2,13 @@ import { Box, Divider, Typography, Stack } from "@mui/material";
 import React from "react";
 import UserCard from "./UserCard";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { useQuery } from "@apollo/client";
+import { GET_ALL_USERS } from "../graphql/queries";
 
 const SideBar = ({ setLoggedIn }) => {
-  const users = [
-    { id: 1, firstName: "Name", lastName: "dasf" },
-    { id: 2, firstName: "Name2", lastName: "dasf" },
-    { id: 3, firstName: "Name3", lastName: "dasf" },
-  ];
+  const { loading, data, error } = useQuery(GET_ALL_USERS);
+
+  if (loading) return <Typography variant="h6">Loading chats...</Typography>;
 
   return (
     <Box backgroundColor="#f7f7f7" height="100vh" width="250px" padding="10px">
@@ -22,7 +22,7 @@ const SideBar = ({ setLoggedIn }) => {
         />
       </Stack>
       <Divider />
-      {users.map((user) => {
+      {data.users.map((user) => {
         return <UserCard key={user.id} user={user} />;
       })}
     </Box>
