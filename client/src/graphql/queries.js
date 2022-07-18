@@ -10,3 +10,15 @@ export const GET_ALL_USERS = gql`
     }
   }
 `;
+
+export const GET_MESSAGES = gql`
+  query MessagesByUser($receiverId: Int!) {
+    messagesByUser(receiverId: $receiverId) {
+      id
+      text
+      receiverId
+      senderId
+      createdAt
+    }
+  }
+`;

@@ -1,3 +1,4 @@
+import { useQuery } from "@apollo/client";
 import {
   Box,
   AppBar,
@@ -8,10 +9,18 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useParams } from "react-router-dom";
+import { GET_MESSAGES } from "../graphql/queries";
 import MessageCard from "./MessageCard";
 
 const ChatScreen = () => {
   const { id, name } = useParams();
+  const { loading, data, error } = useQuery(GET_MESSAGES, {
+    variables: {
+      receiverId: +id,
+    },
+  });
+
+  if (error) return <Typography variant="h6">{error.message}</Typography>;
 
   return (
     <Box flexGrow={1}>
@@ -34,22 +43,19 @@ const ChatScreen = () => {
         padding="10px"
         sx={{ overflowY: "auto" }}
       >
-        <MessageCard text="text" date="124" direction="start" />
-        <MessageCard text="text" date="124" direction="end" />
-        <MessageCard text="text" date="124" direction="end" />
-        <MessageCard text="text" date="124" direction="end" />
-        <MessageCard text="text" date="124" direction="end" />
-        <MessageCard text="text" date="124" direction="end" />
-        <MessageCard text="text" date="124" direction="end" />
-        <MessageCard text="text" date="124" direction="end" />
-        <MessageCard text="text" date="124" direction="end" />
-        <MessageCard text="text" date="124" direction="end" />
-        <MessageCard text="text" date="124" direction="end" />
-        <MessageCard text="text" date="124" direction="end" />
-        <MessageCard text="text" date="124" direction="end" />
-        <MessageCard text="text" date="124" direction="end" />
-        <MessageCard text="text" date="124" direction="end" />
-        <MessageCard text="text" date="124" direction="start" />
+        {loading ? (
+          <Typography variant="h6">Loading messageas...</Typography>
+        ) : (
+          data.messagesByUser.map((msg) => {
+            return (
+              <MessageCard
+                text={msg.text}
+                date={msg.createdAt}
+                direction={msg.receiverId == +id ? "end" : "start"}
+              />
+            );
+          })
+        )}
       </Box>
       <TextField
         placeholder="Enter a message"
