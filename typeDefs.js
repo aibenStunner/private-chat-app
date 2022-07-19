@@ -44,6 +44,10 @@ const typeDefs = gql`
     senderId: Int!
     createdAt: Date!
   }
+
+  type Subscription {
+    messageAdded: Message
+  }
 `;
 
 export default typeDefs;
