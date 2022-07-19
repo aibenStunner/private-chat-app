@@ -1,7 +1,7 @@
 import pc from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { AuthenticationError, ForbiddenError } from "apollo-server";
+import { AuthenticationError, ForbiddenError } from "apollo-server-express";
 
 const prisma = new pc.PrismaClient();
 
