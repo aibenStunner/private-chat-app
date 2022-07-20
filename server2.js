@@ -14,10 +14,12 @@ const app = express();
 const httpServer = createServer(app);
 
 const context = ({ req }) => {
-  const { authorization } = req.headers;
-  if (authorization) {
-    const { userId } = jwt.verify(authorization, process.env.JWT_SECRET);
-    return { userId };
+  if (req) {
+    const { authorization } = req.headers;
+    if (authorization) {
+      const { userId } = jwt.verify(authorization, process.env.JWT_SECRET);
+      return { userId };
+    }
   }
 };
 
@@ -35,6 +37,7 @@ const serverCleanup = useServer({ schema, context }, wsServer);
 // create apollo server
 const apolloServer = new ApolloServer({
   schema,
+  context,
   plugins: [
     // Proper shutdown for the HTTP server.
     ApolloServerPluginDrainHttpServer({ httpServer }),
@@ -57,9 +60,7 @@ apolloServer.applyMiddleware({ app, path: "/graphql" });
 
 httpServer.listen(4000);
 
-console.log(
-  `🚀 Apollo and subscription S=server ready at http://localhost:4000`
-);
+console.log(`🚀 Apollo and subscription server ready at http://localhost:4000`);
 
 // const server = new ApolloServer({
 //   typeDefs,

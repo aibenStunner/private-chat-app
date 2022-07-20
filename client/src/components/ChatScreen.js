@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery, useSubscription } from "@apollo/client";
 import {
   Box,
   AppBar,
@@ -14,6 +14,7 @@ import { useParams } from "react-router-dom";
 import { GET_MESSAGES } from "../graphql/queries";
 import MessageCard from "./MessageCard";
 import { SEND_MESSAGE } from "../graphql/mutations";
+import { MSG_SUB } from "../graphql/subscriptions";
 
 const ChatScreen = () => {
   const { id, name } = useParams();
@@ -27,9 +28,17 @@ const ChatScreen = () => {
       setMessages(data.messagesByUser);
     },
   });
+
   const [sendMessage] = useMutation(SEND_MESSAGE, {
     onCompleted(data) {
-      setMessages((prevMessages) => [...prevMessages, data.createMessage]);
+      // setMessages((prevMessages) => [...prevMessages, data.createMessage]);
+    },
+  });
+
+  const { data: subData } = useSubscription(MSG_SUB, {
+    onSubscriptionComplete(data) {
+      console.log(data);
+      setMessages((prevMessages) => [...prevMessages, data.messageAdded]);
     },
   });
 
@@ -65,7 +74,7 @@ const ChatScreen = () => {
                 key={msg.id}
                 text={msg.text}
                 date={msg.createdAt}
-                direction={msg.receiverId == +id ? "end" : "start"}
+                direction={msg.receiverId === +id ? "end" : "start"}
               />
             );
           })

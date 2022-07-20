@@ -109,7 +109,7 @@ const resolvers = {
     },
   },
 
-  Subsription: {
+  Subscription: {
     messageAdded: {
       subscribe: () => pubsub.asyncIterator(MESSAGE_ADDED),
     },
