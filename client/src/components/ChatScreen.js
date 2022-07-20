@@ -29,16 +29,14 @@ const ChatScreen = () => {
     },
   });
 
-  const [sendMessage] = useMutation(SEND_MESSAGE, {
-    onCompleted(data) {
-      // setMessages((prevMessages) => [...prevMessages, data.createMessage]);
-    },
-  });
+  const [sendMessage] = useMutation(SEND_MESSAGE);
 
   const { data: subData } = useSubscription(MSG_SUB, {
-    onSubscriptionComplete(data) {
-      console.log(data);
-      setMessages((prevMessages) => [...prevMessages, data.messageAdded]);
+    onSubscriptionData(d) {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        d.subscriptionData.data.messageAdded,
+      ]);
     },
   });
 
@@ -68,7 +66,7 @@ const ChatScreen = () => {
         {loading ? (
           <Typography variant="h6">Loading messageas...</Typography>
         ) : (
-          data.messagesByUser.map((msg) => {
+          messages.map((msg) => {
             return (
               <MessageCard
                 key={msg.id}
